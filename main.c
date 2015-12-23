@@ -1,5 +1,8 @@
 #include "header.h"
 #include "connect.h"
+int bcount=0;
+static pre =1;
+int cur=1;
 void http(char *api_key,int field,double data)
 
 {
@@ -165,61 +168,61 @@ static gboolean connect_cb2(GIOChannel *io, GIOCondition cond,
 
 static void test_cb()
 {
-/*
-	if(postflag==0)
-
-	{
-		size_t plen;
-		uint8_t *value;
-		plen = gatt_attr_data_from_string("41", &value);
-		gatt_write_cmd(attrib, 14, value, plen, NULL, NULL);
-		g_free(value);
-
-		postflag = 1;
-	}
-*/
-    //if(digitalRead(7)==0)
-
-
-	//g_print("  , times = %d.\n", digitalRead(7));
-
-	//sleep(1);
+printf("cur=%d\n",cur);
+    if(digitalRead(7)==0)
+    cur=0;
 
 }
 
 static void test_cb2()
 {
+printf("cur=%d\n",cur);
+//delay(30);
+if(digitalRead(7)==0)
+{
+printf("sdsdf\n");
+//delay(100);
+if(pre  ==31)
+{
+active_the_lamp(30);
+pre =30;
+}
+else
+{
+active_the_lamp(31);
+pre=31;
+}
 
-	g_print("change state  , times = %d.\n", digitalRead(7));
-	times++;
 
-    if(times==3)
+}
+
+//printf("cur =%d, pre =%d\n",cur,pre);
+
+
+
+}
+void  active_the_lamp(int a)
+{
+printf("fgfgfg\n");
+    size_t plen;
+    uint8_t *value;
+    if(a==30)
     {
 
-
-		if(pre_state==31)
-		{
-		 size_t plen;
-		uint8_t *value;
-		pre_state =30;
-		plen = gatt_attr_data_from_string("30", &value);
-		gatt_write_cmd(attrib, 14, value, plen, NULL, NULL);
-		g_free(value);
-		}
-		else
-		{
-		 size_t plen;
-		uint8_t *value;
-		pre_state = 31;
-		plen = gatt_attr_data_from_string("31", &value);
-		gatt_write_cmd(attrib, 14, value, plen, NULL, NULL);
-		g_free(value);
-		}
-
-
-		times=0;
-
+        plen = gatt_attr_data_from_string("30", &value);
+        gatt_write_cmd(attrib, 14, value, plen, NULL, NULL);
     }
+    else
+    {
+
+        plen = gatt_attr_data_from_string("31", &value);
+        gatt_write_cmd(attrib, 14, value, plen, NULL, NULL);
+    }
+
+
+    g_free(value);
+
+
 
 }
 static void connect_cb(GIOChannel *io, GError *err, gpointer user_data)
@@ -249,7 +252,13 @@ static void connect_cb(GIOChannel *io, GError *err, gpointer user_data)
 	g_free(value);
 	*/
 	//g_timeout_add_seconds(0,test_cb,NULL);
-	//g_timeout_add_seconds(20,test_cb2,NULL);
+	//g_timeout_add_seconds(0,test_cb2,NULL);
+	g_timeout_add(150,test_cb2,NULL);
+
+
+//	test_cb2();
+
+
 
 
 
@@ -276,38 +285,48 @@ static void connect_add(GIOChannel *io, BtIOConnect connect,
 }
 void myinterupt()
 {
-        printf("gpio = %d\n",digitalRead(7));
-      if(postflag==1)
-      return;
+
+	static int it =0, on=0,stop=0,ms=0;
+
+	it++;
+
+	printf("it= %d\n  , on=%d  , stop = %d\n",it,on,stop);
 
 
-      postflag=1;
+	if(it ==1 && on==0 && stop ==0)
+	{
 
-      if(pre_state==31)
-      {
-        size_t plen;
+		stop =1;
+		size_t plen;
 		uint8_t *value;
-		//pre_state =30;
 		plen = gatt_attr_data_from_string("30", &value);
 		gatt_write_cmd(attrib, 14, value, plen, NULL, NULL);
 		g_free(value);
-		pre_state =30;
-		//delay(1000);
-      }
-      else
-      {
-        size_t plen;
+		delay(500);
+		on = 1;
+		//it=0;
+		//stop=0;
+
+
+	}
+	else if (it==1 && on==1 && stop ==0)
+	{
+		stop=1;
+		size_t plen;
 		uint8_t *value;
-		//pre_state =31;
 		plen = gatt_attr_data_from_string("31", &value);
 		gatt_write_cmd(attrib, 14, value, plen, NULL, NULL);
 		g_free(value);
-		pre_state =31;
-		//delay(1000);
+		delay(500);
+		on =0;
+		//it=0;
+		//stop=0;
+	}
 
-      }
-     // delay(1000);
-         postflag=0;
+
+		ms = 500;
+
+
 }
 int main(int argc, char *argv[])
 {
@@ -329,7 +348,7 @@ int main(int argc, char *argv[])
         pinMode(7,INPUT);
 
 
-        wiringPiISR(7,INT_EDGE_SETUP,&myinterupt);
+        //wiringPiISR(7,INT_EDGE_FALLING,&myinterupt);
 		GError **err;
 		bdaddr_t *sba, *dba;
 		struct set_opts *opts;

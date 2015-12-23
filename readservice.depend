@@ -723,3 +723,36 @@
 
 1450763438 /root/Desktop/readservice/connect.h
 
+1450788423 source:/root/Desktop/codeblock/main.c
+	"header.h"
+	"connect.h"
+
+1450770217 /root/Desktop/codeblock/header.h
+	<config.h>
+	<string.h>
+	<stdlib.h>
+	<stdarg.h>
+	<errno.h>
+	<stdio.h>
+	<readline/readline.h>
+	<stdbool.h>
+	<signal.h>
+	<sys/signalfd.h>
+	<errno.h>
+	<glib.h>
+	<stdlib.h>
+	<unistd.h>
+	<poll.h>
+	<bluetooth/bluetooth.h>
+	<bluetooth/hci.h>
+	<bluetooth/hci_lib.h>
+	<bluetooth/l2cap.h>
+	<bluetooth/uuid.h>
+	<gatt/gatt.h>
+	<gatt/gattrib.h>
+	<gatt/btio.h>
+	<curl/curl.h>
+	<wiringPi.h>
+
+1450770217 /root/Desktop/codeblock/connect.h
+

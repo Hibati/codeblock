@@ -17,7 +17,7 @@
 					<Add option="`pkg-config --cflags --libs glib-2.0` -lbluetooth    -lgatt -lreadline" />
 				</Compiler>
 				<Linker>
-					<Add option="`pkg-config --cflags --libs glib-2.0` -lbluetooth    -lgatt -lreadline  -lcurl" />
+					<Add option="`pkg-config --cflags --libs glib-2.0` -lbluetooth    -lgatt -lreadline  -lcurl -lwiringPi" />
 				</Linker>
 			</Target>
 			<Target title="Release">
