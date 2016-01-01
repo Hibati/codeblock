@@ -1,6 +1,6 @@
 #include "header.h"
 #include "connect.h"
-void http(char *api_key,int field,int data)
+void http(char *api_key,int field,double data)
 
 {
 
@@ -20,7 +20,7 @@ void http(char *api_key,int field,int data)
 	curl_easy_setopt(curl, CURLOPT_URL, "http://iotser.iots.com.tw:3000/update.json");
 	/* Now specify the POST data */
 //	sprintf(url,"api_key=8XG6IW1ZC5YH420K&field1=%d",data[0]);
-	sprintf(url,"api_key=%s&field%d=%d",api_key,field,data);
+	sprintf(url,"api_key=%s&field%d=%f",api_key,field,data);
 
 	printf("url=%s\n",url);
 	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, url);
@@ -165,6 +165,7 @@ static gboolean connect_cb2(GIOChannel *io, GIOCondition cond,
 
 static void test_cb()
 {
+
 	if(postflag==0)
 
 	{
@@ -183,6 +184,7 @@ static void test_cb()
 
 static void test_cb2()
 {
+
 	g_print("time=%d\n",times);
     times++;
 	if(datalen!=0 && postflag==1)
@@ -203,10 +205,10 @@ static void test_cb2()
 		else
 		http("8XG6IW1ZC5YH420k",1,0);
 
-		http("BN6UZCK7KXZHN70G",1,((data[1]<<8)+data[2])/10);
-		http("E6WH5PW7UMAP79UL",1,((data[3]<<8)+data[4])/10);
+		http("BN6UZCK7KXZHN70G",1,(  ((int)data[1]<<8)+data[2])/10);
+		http("E6WH5PW7UMAP79UL",1,(((int)data[3]<<8)+data[4])/10);
 		http("XK1WIDUAXKN86WTR",1,(data[5])+data[6]);
-		http("O0CP6FQFMW2EP0R3",1,((data[7]<<8)+data[8]));
+		http("O0CP6FQFMW2EP0R3",1,(((int)data[7]<<8)+data[8]));
 
 
 		postflag = 0;
@@ -266,8 +268,20 @@ static void connect_add(GIOChannel *io, BtIOConnect connect,
 	g_io_add_watch_full(io, G_PRIORITY_DEFAULT, cond, connect_cb2, conn,
 					(GDestroyNotify) connect_remove);
 }
-int main()
+int main(int argc, char *argv[])
 {
+		FILE *fPtr;
+
+
+		fPtr = fopen("pid.txt", "w");
+		if (!fPtr) {
+		printf("檔案建立失敗...\n");
+
+		}
+
+		fprintf(fPtr, "%d", getpid());
+
+		fclose(fPtr);
 
 		GError **err;
 		bdaddr_t *sba, *dba;

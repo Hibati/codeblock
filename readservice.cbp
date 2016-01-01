@@ -36,6 +36,7 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="connect.h" />
 		<Unit filename="header.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />

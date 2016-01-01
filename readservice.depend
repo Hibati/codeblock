@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1450763441 source:/root/Desktop/readservice/main.c
+1450764907 source:/root/Desktop/readservice/main.c
 	"header.h"
 	"connect.h"
 
@@ -694,7 +694,7 @@
 	<sys/types.h>
 	<pthread.h>
 
-1450762442 /root/Desktop/readservice/header.h
+1450763927 /root/Desktop/readservice/header.h
 	<config.h>
 	<string.h>
 	<stdlib.h>

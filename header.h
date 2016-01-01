@@ -29,7 +29,7 @@
 		g_set_error(gerr, BT_IO_ERROR, err, \
 				str ": %s (%d)", strerror(err), err)
 static GAttrib *attrib = NULL;
-int data[50];
+double data[50];
 int postflag=0;
 int datalen = 0;
 int times=0;
