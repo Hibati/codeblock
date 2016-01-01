@@ -24,6 +24,7 @@
 #include <gatt/gattrib.h>
 #include <gatt/btio.h>
 #include <curl/curl.h>
+#include <wiringPi.h>
 #define DEFAULT_DEFER_TIMEOUT 30
 #define ERROR_FAILED(gerr, str, err) \
 		g_set_error(gerr, BT_IO_ERROR, err, \
@@ -33,6 +34,7 @@ double data[50];
 int postflag=0;
 int datalen = 0;
 int times=0;
+int pre_state=30;
 static char *opt_dst_type = NULL;
 //static char *opt_value = NULL;
 static char *opt_sec_level = NULL;

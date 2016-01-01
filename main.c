@@ -165,7 +165,7 @@ static gboolean connect_cb2(GIOChannel *io, GIOCondition cond,
 
 static void test_cb()
 {
-
+/*
 	if(postflag==0)
 
 	{
@@ -177,46 +177,50 @@ static void test_cb()
 
 		postflag = 1;
 	}
+*/
+    //if(digitalRead(7)==0)
 
-	g_print("b=%d\n",postflag);
+
+	//g_print("  , times = %d.\n", digitalRead(7));
+
+	//sleep(1);
 
 }
 
 static void test_cb2()
 {
 
-	g_print("time=%d\n",times);
-    times++;
-	if(datalen!=0 && postflag==1)
-	{
-		/*
-		if(data[0]==49)
-		http("8XG6IW1ZC5YH420k",1,1);
+	g_print("change state  , times = %d.\n", digitalRead(7));
+	times++;
+
+    if(times==3)
+    {
+
+
+		if(pre_state==31)
+		{
+		 size_t plen;
+		uint8_t *value;
+		pre_state =30;
+		plen = gatt_attr_data_from_string("30", &value);
+		gatt_write_cmd(attrib, 14, value, plen, NULL, NULL);
+		g_free(value);
+		}
 		else
-		http("8XG6IW1ZC5YH420k",1,0);
-
-		http("BN6UZCK7KXZHN70G",1,((data[1]<<8)+data[2])/10);
-		http("VD4K0RK8CNOTWAUC",1,((data[3]<<8)+data[4])/10);
-		http("ZW4V20RB26PHNFV6",1,(float)((data[5]*10)/data[6]));
-		http("MX2XA7YIEZCKWE14",1,((data[7]<<8)+data[8]));
-*/
-		if(data[0]==49)
-		http("8XG6IW1ZC5YH420k",1,1);
-		else
-		http("8XG6IW1ZC5YH420k",1,0);
-
-		http("BN6UZCK7KXZHN70G",1,(  ((int)data[1]<<8)+data[2])/10);
-		http("E6WH5PW7UMAP79UL",1,(((int)data[3]<<8)+data[4])/10);
-		http("XK1WIDUAXKN86WTR",1,(data[5])+data[6]);
-		http("O0CP6FQFMW2EP0R3",1,(((int)data[7]<<8)+data[8]));
+		{
+		 size_t plen;
+		uint8_t *value;
+		pre_state = 31;
+		plen = gatt_attr_data_from_string("31", &value);
+		gatt_write_cmd(attrib, 14, value, plen, NULL, NULL);
+		g_free(value);
+		}
 
 
-		postflag = 0;
 		times=0;
 
-	}
-	sleep(1);
-	g_print("e=%d\n",postflag);
+    }
+
 }
 static void connect_cb(GIOChannel *io, GError *err, gpointer user_data)
 {
@@ -237,13 +241,15 @@ static void connect_cb(GIOChannel *io, GError *err, gpointer user_data)
 					events_handler, attrib, NULL);
 	g_print("Connection successful\n");
 	//gatt_discover_primary(attrib, NULL, primary_all_cb, NULL);
+	/*
 	size_t plen;
 	uint8_t *value;
 	plen = gatt_attr_data_from_string("0100", &value);
 	gatt_write_cmd(attrib, 12, value, plen, NULL, NULL);
 	g_free(value);
-	g_timeout_add_seconds(2,test_cb,NULL);
-	g_timeout_add_seconds(15,test_cb2,NULL);
+	*/
+	//g_timeout_add_seconds(0,test_cb,NULL);
+	//g_timeout_add_seconds(20,test_cb2,NULL);
 
 
 
@@ -268,6 +274,41 @@ static void connect_add(GIOChannel *io, BtIOConnect connect,
 	g_io_add_watch_full(io, G_PRIORITY_DEFAULT, cond, connect_cb2, conn,
 					(GDestroyNotify) connect_remove);
 }
+void myinterupt()
+{
+        printf("gpio = %d\n",digitalRead(7));
+      if(postflag==1)
+      return;
+
+
+      postflag=1;
+
+      if(pre_state==31)
+      {
+        size_t plen;
+		uint8_t *value;
+		//pre_state =30;
+		plen = gatt_attr_data_from_string("30", &value);
+		gatt_write_cmd(attrib, 14, value, plen, NULL, NULL);
+		g_free(value);
+		pre_state =30;
+		//delay(1000);
+      }
+      else
+      {
+        size_t plen;
+		uint8_t *value;
+		//pre_state =31;
+		plen = gatt_attr_data_from_string("31", &value);
+		gatt_write_cmd(attrib, 14, value, plen, NULL, NULL);
+		g_free(value);
+		pre_state =31;
+		//delay(1000);
+
+      }
+     // delay(1000);
+         postflag=0;
+}
 int main(int argc, char *argv[])
 {
 		FILE *fPtr;
@@ -282,7 +323,13 @@ int main(int argc, char *argv[])
 		fprintf(fPtr, "%d", getpid());
 
 		fclose(fPtr);
+        if(wiringPiSetup()==-1)
+        exit(1);
 
+        pinMode(7,INPUT);
+
+
+        wiringPiISR(7,INT_EDGE_SETUP,&myinterupt);
 		GError **err;
 		bdaddr_t *sba, *dba;
 		struct set_opts *opts;
@@ -295,8 +342,9 @@ int main(int argc, char *argv[])
 		opts->priority = 0;
 		opts->src_type = BDADDR_LE_PUBLIC;
 		//str2ba("D8:AD:4A:AA:42:B5",&opts->dst);
-		str2ba("EE:2A:81:DE:72:6A",&opts->dst);
+		//str2ba("EE:2A:81:DE:72:6A",&opts->dst);
 		//str2ba("00:1A:7D:DA:71:13",&opts->src);
+		str2ba("F6:97:28:12:42:66",&opts->dst);
 		opts->dst_type = BDADDR_LE_RANDOM;
 		opts->type = BT_IO_L2CAP;
 		opts->cid = ATT_CID;
